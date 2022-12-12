@@ -22,6 +22,7 @@
 import random
 import collections
 from .BaseAction import BaseAction
+from .PRNG import PRNG
 
 class SequenceDiagramGenerator():
 	_Signal = collections.namedtuple("Signal", [ "name", "values" ])
@@ -48,11 +49,11 @@ class SequenceDiagramGenerator():
 		self._signal_dict[signal.name] = signal
 		return self
 
-	def	add_random_signal(self, name, length, toggle_chance = 25):
-		value = random.randint(0, 1)
+	def	add_random_signal(self, prng, name, length, toggle_chance = 25):
+		value = prng.randint(0, 1)
 		rndvect = [ ]
 		for i in range(length):
-			if random.randint(0, 100) < toggle_chance:
+			if prng.randint(0, 100) < toggle_chance:
 				value = int(not value)
 			rndvect.append(value)
 		return self.add_signal(name, rndvect)
@@ -186,6 +187,12 @@ class ActionDigitalTimingDiagram(BaseAction):
 	def run(self):
 		self._initialize()
 
+		if self._args.random_seed is not None:
+			seed = self._args.random_seed
+		else:
+			seed = str(random.randint(0, 9999999999))
+		prng = PRNG(seed.encode("ascii"))
+
 		sdg = SequenceDiagramGenerator()
 
 		match self._args.device:
@@ -208,7 +215,8 @@ class ActionDigitalTimingDiagram(BaseAction):
 			if signame in self._predetermined:
 				sdg.add_signal(signame, self._predetermined[signame])
 			else:
-				sdg.add_random_signal(signame, self._args.length)
+				sdg.add_random_signal(prng, signame, self._args.length)
 
+		print(f"# Random seed: {seed}")
 		sdg.simulate(device)
 		sdg.print()

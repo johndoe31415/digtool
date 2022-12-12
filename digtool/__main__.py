@@ -79,6 +79,7 @@ def main():
 	mc.register("random", "Generate a randomized CDNF", genparser, action = ActionRandom)
 
 	def genparser(parser):
+		parser.add_argument("-s", "--random-seed", help = "Specify a custom seed for reproducible traces. Defaults to a random value.")
 		parser.add_argument("-d", "--device", choices = [ "sr-nand-ff", "d-ff", "jk-ff" ], default = "sr-nand-ff", help = "Generate a timing diagram for this type of device. Can be one of %(choices)s, defaults to %(default)s")
 		parser.add_argument("-i", "--initial-state-high", action = "store_true", help = "For devices with an internal state, initialize them with HIGH.")
 		parser.add_argument("-n", "--negative-edge-triggered", action = "store_true", help = "For devices which are edge triggered, trigger on the negative edge.")
