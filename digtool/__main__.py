@@ -22,7 +22,7 @@
 import sys
 from .ActionParse import ActionParse
 from .ActionTable import ActionTable
-#from .ActionSynthesize import ActionSynthesize
+from .ActionSynthesize import ActionSynthesize
 from .ActionEqual import ActionEqual
 from .ActionQMC import ActionQMC
 from .ActionCanonicalize import ActionCanonicalize
@@ -47,10 +47,11 @@ def main():
 		parser.add_argument("dc_expression", nargs = "?", help = "Optional expression that gives all don't care values")
 	mc.register("table", "Create a truth table for a Boolean expression", genparser, action = ActionTable)
 
-#	def genparser(parser):
-#		parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be given multiple times.")
-#		parser.add_argument("filename", help = "Filename that contains the table data")
-#	mc.register("synthesize", "Synthesize a Boolean expression from a given truth table", genparser, action = ActionSynthesize)
+	def genparser(parser):
+		parser.add_argument("-n", "--no-optimization", action = "store_true", help = "Do not automatically optimize the resulting expression.")
+		parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be given multiple times.")
+		parser.add_argument("filename", help = "Filename that contains the table data")
+	mc.register("synthesize", "Synthesize a Boolean expression from a given truth table", genparser, action = ActionSynthesize)
 
 	def genparser(parser):
 		parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be given multiple times.")

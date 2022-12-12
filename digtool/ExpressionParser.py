@@ -211,17 +211,6 @@ class ParsedExpression():
 			if evaluation == 0:
 				yield value_dict
 
-	def coltable(self):
-		rows = [ ]
-		for i in range(len(self.variables) + 1):
-			rows.append([ ])
-		for (var_dict, evaluation) in self.table():
-			for (varno, varname) in enumerate(self.variables):
-				rows[varno].append(var_dict[varname])
-			rows[-1].append(evaluation)
-		yield from zip(self.variables, rows)
-		yield (None, rows[-1])
-
 	def __iter__(self):
 		yield from self._traverse(self._expr)
 

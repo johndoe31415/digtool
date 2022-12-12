@@ -31,6 +31,17 @@ class ActionTable(BaseAction):
 			else:
 				yield (var_dict, "*")
 
+	def _coltable(self):
+		rows = [ ]
+		for i in range(len(self._expr.variables) + 1):
+			rows.append([ ])
+		for (var_dict, evaluation) in self._table():
+			for (varno, varname) in enumerate(self._expr.variables):
+				rows[varno].append(var_dict[varname])
+			rows[-1].append(evaluation)
+		yield from zip(self._expr.variables, rows)
+		yield (None, rows[-1])
+
 	def _print_text(self):
 		sep = f"{'-' * (self._maxlen + 2)}"
 		end = "|"
@@ -40,13 +51,13 @@ class ActionTable(BaseAction):
 		sep_row = end + end.join([ sep ] * cols) + end
 		print(hdr_row)
 		print(sep_row)
-		for (var_dict, evaluation) in self._expr.table():
+		for (var_dict, evaluation) in self._table():
 			val_row = end + end.join(f" {var_dict[varname]:<{self._maxlen}} " for varname in list(self._expr.variables)) + end + f" {evaluation:<{self._maxlen}} " + end
 			print(val_row)
 
 	def _print_table(self):
 		print("\t".join(varname for varname in self._expr.variables))
-		for (var_dict, evaluation) in self._expr.table():
+		for (var_dict, evaluation) in self._table():
 			line = [ str(var_dict[varname]) for varname in self._expr.variables ]
 			line.append(str(evaluation))
 			print("\t".join(line))
@@ -56,7 +67,7 @@ class ActionTable(BaseAction):
 		for i in range(len(self._expr.variables) + 1):
 			rows.append([ ])
 
-		for (var_name, values) in self._expr.coltable():
+		for (var_name, values) in self._coltable():
 			if var_name is None:
 				print("\\hline")
 				var_name = "="
@@ -106,7 +117,6 @@ class ActionTable(BaseAction):
 				if var_dict[x_var]:
 					x_gc |= 1 << (x_var_cnt - 1 - no)
 			x = _inv_gray_code(x_gc)
-
 
 			y_gc = 0
 			for (no, y_var) in enumerate(y_vars):
