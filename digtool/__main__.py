@@ -86,7 +86,7 @@ def main():
 		parser.add_argument("-l", "--length", metavar = "count", type = int, default = 32, help = "Number of bits to generate. By default %(default)d.")
 		parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increases verbosity. Can be specified multiple times to increase.")
 		parser.add_argument("param", metavar = "signame=value", nargs = "*", help = "Predefine some signals, e.g., 'C=10100010'. By default, those are randomly generated.")
-	mc.register("dtg", "Generate a digital timing diagram", genparser, action = ActionDigitalTimingDiagram)
+	mc.register("dtd", "Generate a digital timing diagram", genparser, action = ActionDigitalTimingDiagram)
 
 	sys.exit(mc.run(sys.argv[1:]) or 0)
 
