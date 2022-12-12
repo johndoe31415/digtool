@@ -138,6 +138,38 @@ class JKFlipflop():
 		sdg.append("Q", self._state)
 		sdg.append("!Q", not self._state)
 
+class JKMasterSlaveFlipflop():
+	def __init__(self, initial_state: int = 0):
+		self._master = initial_state
+		self._slave = initial_state
+
+	def tick(self, sdg, index, prev, now):
+		if (prev["C"] == 0) and (now["C"] == 1):
+			# Positive clock edge triggers master
+			if (prev["J"] == 1) and (prev["K"] == 0):
+				self._master = 1
+				sdg.annotate("C", index - 1, "S")
+			elif (prev["J"] == 0) and (prev["K"] == 1):
+				self._master = 0
+				sdg.annotate("C", index - 1, "R")
+			elif (prev["J"] == 1) and (prev["K"] == 1):
+				self._master = 1 - self._master
+				sdg.annotate("C", index - 1, "T")
+		elif (prev["C"] == 1) and (now["C"] == 0):
+			# Negative clock edge triggers slave
+			slave_j = self._master
+			if (slave_j == 1):
+				# J = 1, K = 0
+				self._slave = 1
+			else:
+				# J = 0, K = 1
+				self._slave = 0
+
+		sdg.append("M", self._master)
+		sdg.append("Q", self._slave)
+		sdg.append("!Q", not self._slave)
+
+
 class SRFlipflopNAND():
 	def __init__(self, initial_state: int = 0):
 		self._state = initial_state
@@ -174,6 +206,7 @@ class ActionDigitalTimingDiagram(BaseAction):
 		"sr-nand-ff":	("S", "R"),
 		"d-ff":			("C", "D"),
 		"jk-ff":		("C", "J", "K"),
+		"jk-ms-ff":		("C", "J", "K"),
 	}
 
 	def _initialize(self):
@@ -210,6 +243,9 @@ class ActionDigitalTimingDiagram(BaseAction):
 				device = JKFlipflop(initial_state = int(self._args.initial_state_high), pos_edge = not self._args.negative_edge_triggered)
 				if self._args.negative_edge_triggered:
 					sdg.add_signal_alias("C", "!C")
+
+			case "jk-ms-ff":
+				device = JKMasterSlaveFlipflop(initial_state = int(self._args.initial_state_high))
 
 		for signame in self._INPUT_SIGNALS[self._args.device]:
 			if signame in self._predetermined:
