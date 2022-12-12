@@ -22,6 +22,7 @@
 import re
 from .BaseAction import BaseAction
 from .ExpressionParser import parse_expression
+from .ExpressionFormatter import ExpressionFormatterText
 from .QuineMcCluskey import QuineMcCluskey
 
 class ActionSynthesize(BaseAction):
@@ -72,5 +73,5 @@ class ActionSynthesize(BaseAction):
 			qmc = QuineMcCluskey(expr, dc_expr, verbosity = self._args.verbose)
 			result = qmc.optimize()
 		else:
-			result = str(expr)
+			result = str(ExpressionFormatterText(expr))
 		print(result)

@@ -21,12 +21,15 @@
 
 from .BaseAction import BaseAction
 from .ExpressionParser import parse_expression
-from .ExpressionFormatter import ExpressionFormatterTex
+from .ExpressionFormatter import ExpressionFormatterText, ExpressionFormatterTex
 
 class ActionParse(BaseAction):
 	def run(self):
 		expr = parse_expression(self._args.expression)
 		match self._args.format:
+			case "text":
+				print(ExpressionFormatterText(expr, implicit_and = not self._args.no_implicit_and))
+
 			case "internal":
 				print(expr)
 

@@ -35,7 +35,7 @@ def main():
 
 	def genparser(parser):
 		parser.add_argument("-n", "--no-implicit-and", action = "store_true", help = "By default, AND operations are implicity expressed (using a space character). This causes an actual operator to be emitted here.")
-		parser.add_argument("-f", "--format", choices = [ "tex-tech", "tex-math", "internal" ], default = "tex-tech", help = "Print the expression in the desired format. Can be one of %(choices)s, defaults to %(default)s.")
+		parser.add_argument("-f", "--format", choices = [ "text", "tex-tech", "tex-math", "internal" ], default = "text", help = "Print the expression in the desired format. Can be one of %(choices)s, defaults to %(default)s.")
 		parser.add_argument("-v", "--verbose", action = "count", default = 0, help = "Increase verbosity. Can be given multiple times.")
 		parser.add_argument("expression", help = "Input expression to parse")
 	mc.register("parse", "Parse and reformat a Boolean expression", genparser, action = ActionParse)

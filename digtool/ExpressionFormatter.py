@@ -60,3 +60,42 @@ class ExpressionFormatterTex():
 
 	def __str__(self):
 		return self._fmt(self._expr.expr)
+
+class ExpressionFormatterText():
+	def __init__(self, expr, neg_overline = True, implicit_and = True):
+		self._expr = expr
+		self._implicit_and = implicit_and
+		self._ops = {
+			Operator.Or: " + ",
+			Operator.And: " * ",
+			Operator.Xor: " XOR ",
+			Operator.Not: "-",
+			Operator.Nand: " NAND ",
+		}
+		if self._implicit_and:
+			self._ops[Operator.And] = " "
+
+	def _op(self, op):
+		return self._ops[op]
+
+	def _fmt(self, expr, prev = None):
+		if isinstance(expr, Variable):
+			return expr.varname
+		elif isinstance(expr, BinaryOperator):
+#			if prev is not None:
+#				print(prev.op, "*******", expr.op)
+			if (prev is None) or ((prev is not None) and ((prev.op == expr.op) or ((prev.op, expr.op) == (Operator.Or, Operator.And)))):
+				return f"{self._fmt(expr.lhs, expr)}{self._op(expr.op)}{self._fmt(expr.rhs, expr)}"
+			else:
+				return f"({self._fmt(expr.lhs, expr)}{self._op(expr.op)}{self._fmt(expr.rhs, expr)})"
+		elif isinstance(expr, UnaryOperator):
+			if isinstance(expr.rhs, Variable) or isinstance(expr.rhs, Constant):
+				return f"{self._op(expr.op)}{self._fmt(expr.rhs, expr)}"
+			else:
+				return f"{self._op(expr.op)}({self._fmt(expr.rhs, expr)})"
+		elif isinstance(expr, Constant):
+			return str(expr)
+		raise NotImplementedError(expr)
+
+	def __str__(self):
+		return self._fmt(self._expr.expr)
